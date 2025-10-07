@@ -40,7 +40,7 @@ export const sendPushNotifications = async (req, res) => {
       notification: { title, body },
       data: {
         ...data,
-        notificationId: notificationRecord.id,
+        notification_id: notificationRecord.id,
       },
       apns: {
         payload: {
