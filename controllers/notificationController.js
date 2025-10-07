@@ -1,5 +1,5 @@
 import { getMessaging } from '../config/firebase.js';
-import { saveNotification, saveMetric, updateMetric } from '../utils/mongoStorage.js';
+import { saveNotification, saveMetric, } from '../utils/mongoStorage.js';
 import { randomUUID } from 'crypto';
 
 export const sendPushNotifications = async (req, res) => {
@@ -88,7 +88,7 @@ export const sendPushNotifications = async (req, res) => {
         });
 
         // Optionally update metric with failure info
-        await updateMetric(metricId, { error: error.message });
+        // await updateMetric(metricId, { error: error.message });
 
         return { token, success: false, error: error.message };
       }
