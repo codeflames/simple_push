@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { initializeFirebase } from './config/firebase.js';
+import { connectMongoDB } from './config/mongodb.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 
 dotenv.config();
@@ -14,6 +15,12 @@ try {
   initializeFirebase();
 } catch (error) {
   console.error('Warning: Firebase not initialized. Add FIREBASE_SERVICE_ACCOUNT to .env');
+}
+
+try {
+  await connectMongoDB();
+} catch (error) {
+  console.error('Warning: MongoDB not connected. Add MONGODB_URI to .env');
 }
 
 app.use('/api/notifications', notificationRoutes);

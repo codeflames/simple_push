@@ -1,5 +1,5 @@
 import { getMessaging } from '../config/firebase.js';
-import { saveNotification, saveMetric, updateMetric } from '../utils/fileStorage.js';
+import { saveNotification, saveMetric } from '../utils/mongoStorage.js';
 import { randomUUID } from 'crypto';
 
 export const sendPushNotifications = async (req, res) => {

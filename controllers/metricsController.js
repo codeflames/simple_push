@@ -1,4 +1,4 @@
-import { getMetricByNotificationAndToken, updateMetric, saveMetric, getNotificationById, getMetricsByNotificationId } from '../utils/fileStorage.js';
+import { getMetricByNotificationAndToken, updateMetric, saveMetric, getNotificationById, getMetricsByNotificationId } from '../utils/mongoStorage.js';
 import { randomUUID } from 'crypto';
 
 export const updateMetrics = async (req, res) => {
