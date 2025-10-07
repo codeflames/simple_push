@@ -222,3 +222,17 @@ All error responses include:
 
 
 
+
+
+
+curl -X POST http://localhost:3000/api/notifications/send \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tokens": ["
+cI9oZvx2ekDcjlRRVdRmyi:APA91bGxEtB7bP16fgmcRZxLoC4d6HdNxtwJXhmmAI9towqO72-p8Z2fUEssA0TxDic3h8bWc2NRaWYrw8uzWx-Flm4iXIpe8xUgmtplNnSY5OXhg9gnYfk"],
+    "title": "Notification Title",
+    "body": "Notification message body",
+    "data": {
+      "custom_key": "custom_value"
+    }
+  }'
