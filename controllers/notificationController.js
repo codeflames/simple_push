@@ -6,71 +6,89 @@ export const sendPushNotifications = async (req, res) => {
   try {
     const { tokens, title, body, data = {} } = req.body;
 
+    // Validate request body
     if (!tokens || !Array.isArray(tokens) || tokens.length === 0) {
       return res.status(400).json({
         success: false,
-        error: 'Tokens array is required and must not be empty'
+        error: 'Tokens array is required and must not be empty',
       });
     }
 
     if (!title || !body) {
       return res.status(400).json({
         success: false,
-        error: 'Title and body are required'
+        error: 'Title and body are required',
       });
     }
 
+    // Record the main notification entry
     const notificationRecord = {
       id: randomUUID(),
       title,
       body,
       data,
       tokens_count: tokens.length,
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     await saveNotification(notificationRecord);
 
     const messaging = getMessaging();
 
+    // Construct base FCM message
     const message = {
-      notification: {
-        title,
-        body
-      },
+      notification: { title, body },
       data: {
         ...data,
-        notificationId: notificationRecord.id
-      }
+        notificationId: notificationRecord.id,
+      },
+      apns: {
+        payload: {
+          aps: {
+            'mutable-content': 1, // Correct APNs key
+          },
+        },
+      },
     };
 
+    // Send to each token
     const sendPromises = tokens.map(async (token) => {
       try {
         await messaging.send({ ...message, token });
 
+        const metricId = randomUUID();
+
         await saveMetric({
-          id: randomUUID(),
+          id: metricId,
           notification_id: notificationRecord.id,
           token,
           delivered: true,
           delivered_at: new Date().toISOString(),
           opened: false,
-          opened_at: null
+          opened_at: null,
         });
+
+        // Update metric after save (example: marking as confirmed)
+        await updateMetric(metricId, { confirmed: true });
 
         return { token, success: true };
       } catch (error) {
         console.error(`Failed to send to token ${token}:`, error.message);
 
+        const metricId = randomUUID();
+
         await saveMetric({
-          id: randomUUID(),
+          id: metricId,
           notification_id: notificationRecord.id,
           token,
           delivered: false,
           delivered_at: null,
           opened: false,
-          opened_at: null
+          opened_at: null,
         });
+
+        // Optionally update metric with failure info
+        await updateMetric(metricId, { error: error.message });
 
         return { token, success: false, error: error.message };
       }
@@ -78,8 +96,9 @@ export const sendPushNotifications = async (req, res) => {
 
     const results = await Promise.all(sendPromises);
 
-    const successCount = results.filter(r => r.success).length;
-    const failureCount = results.filter(r => !r.success).length;
+    // Calculate summary
+    const successCount = results.filter((r) => r.success).length;
+    const failureCount = results.filter((r) => !r.success).length;
 
     res.status(200).json({
       success: true,
@@ -87,16 +106,15 @@ export const sendPushNotifications = async (req, res) => {
       summary: {
         total: tokens.length,
         succeeded: successCount,
-        failed: failureCount
+        failed: failureCount,
       },
-      results
+      results,
     });
-
   } catch (error) {
     console.error('Error sending push notifications:', error);
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
