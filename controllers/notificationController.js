@@ -37,17 +37,17 @@ export const sendPushNotifications = async (req, res) => {
 
     // Extract send context info from data if available, or use defaults
     const send_context = data.send_context || 'transactional';
-    const send_context_id = data.send_context_id || '';
+    const delivery_send_context_id = data.send_context_id || '';
     
     // Construct base FCM message
     const message = {
       notification: { title, body },
       data: {
         ...data,
-        cdp_message_id: notificationRecord.id,  // Use message_id as required by metrics endpoint
+        delivery_message_id: notificationRecord.id,  // Use message_id as required by metrics endpoint
         notification_id: notificationRecord.id, // Keep for backward compatibility
-        cdp_send_context,
-       cdp_send_context_id,
+        delivery_send_context,
+       delivery_send_context_id,
       },
       apns: {
         payload: {
