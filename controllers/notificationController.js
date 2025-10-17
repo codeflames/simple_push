@@ -49,13 +49,13 @@ export const sendPushNotifications = async (req, res) => {
         send_context,
         send_context_id,
       },
-      apns: {
-        payload: {
-          aps: {
-            'mutable-content': 1, // Correct APNs key
-          },
-        },
-      },
+      // apns: {
+      //   payload: {
+      //     aps: {
+      //       'mutable-content': 1, // Correct APNs key
+      //     },
+      //   },
+      // },
     };
 
     // Send to each token
