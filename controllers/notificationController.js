@@ -36,7 +36,7 @@ export const sendPushNotifications = async (req, res) => {
     const messaging = getMessaging();
 
     // Extract send context info from data if available, or use defaults
-    const send_context = data.send_context || 'transactional';
+    const delivery_send_context = data.send_context || 'transactional';
     const delivery_send_context_id = data.send_context_id || '';
     
     // Construct base FCM message
