@@ -1,5 +1,5 @@
 import { getMessaging } from '../config/firebase.js';
-import { saveNotification, saveMetric, } from '../utils/mongoStorage.js';
+import { saveNotification, saveMetric, updateMetric } from '../utils/mongoStorage.js';
 import { randomUUID } from 'crypto';
 
 export const sendPushNotifications = async (req, res) => {
@@ -35,12 +35,19 @@ export const sendPushNotifications = async (req, res) => {
 
     const messaging = getMessaging();
 
+    // Extract send context info from data if available, or use defaults
+    const send_context = data.send_context || 'transactional';
+    const send_context_id = data.send_context_id || '';
+    
     // Construct base FCM message
     const message = {
       notification: { title, body },
       data: {
         ...data,
-        notification_id: notificationRecord.id,
+        message_id: notificationRecord.id,  // Use message_id as required by metrics endpoint
+        notification_id: notificationRecord.id, // Keep for backward compatibility
+        send_context,
+        send_context_id,
       },
       apns: {
         payload: {
@@ -66,10 +73,13 @@ export const sendPushNotifications = async (req, res) => {
           delivered_at: new Date().toISOString(),
           opened: false,
           opened_at: null,
+          send_context,
+          send_context_id,
+          person_id: data.person_id || token, // Use person_id from data or fall back to token
         });
 
         // Update metric after save (example: marking as confirmed)
-        await updateMetric(metricId, { confirmed: true });
+        await updateMetric(notificationRecord.id, token, { confirmed: true });
 
         return { token, success: true };
       } catch (error) {
@@ -85,6 +95,9 @@ export const sendPushNotifications = async (req, res) => {
           delivered_at: null,
           opened: false,
           opened_at: null,
+          send_context,
+          send_context_id,
+          person_id: data.person_id || token, // Use person_id from data or fall back to token
         });
 
         // Optionally update metric with failure info

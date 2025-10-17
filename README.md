@@ -93,14 +93,16 @@ Report delivery or open events from client devices.
 **Request Body:**
 ```json
 {
-  "notificationId": "notification-uuid",
-  "token": "fcm_token",
-  "event": "delivered",
-  "timestamp": "2025-10-06T12:00:00Z"
+  "message_id": "msg_1234567890",
+  "person_id": "user_987654321",
+  "send_context": "transactional",
+  "send_context_id": "",
+  "status": "delivered",
+  "ts": "2025-10-15T09:45:30.123Z"
 }
 ```
 
-Events: `delivered` or `opened`
+Status: `delivered` or `opened`
 
 **Response:**
 ```json
@@ -163,10 +165,12 @@ fetch('http://your-server.com/api/notifications/metrics', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    notificationId: notification.data.notificationId,
-    token: fcmToken,
-    event: 'delivered',
-    timestamp: new Date().toISOString()
+    message_id: notification.data.message_id,
+    person_id: notification.data.person_id || fcmToken,
+    send_context: notification.data.send_context || 'transactional',
+    send_context_id: notification.data.send_context_id || '',
+    status: 'delivered',
+    ts: new Date().toISOString()
   })
 });
 
@@ -175,10 +179,12 @@ fetch('http://your-server.com/api/notifications/metrics', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    notificationId: notification.data.notificationId,
-    token: fcmToken,
-    event: 'opened',
-    timestamp: new Date().toISOString()
+    message_id: notification.data.message_id,
+    person_id: notification.data.person_id || fcmToken,
+    send_context: notification.data.send_context || 'transactional',
+    send_context_id: notification.data.send_context_id || '',
+    status: 'opened',
+    ts: new Date().toISOString()
   })
 });
 ```
@@ -195,12 +201,15 @@ fetch('http://your-server.com/api/notifications/metrics', {
 
 ### notification_metrics
 - `id` - UUID primary key
-- `notification_id` - Foreign key to push_notifications
+- `notification_id` - Foreign key to push_notifications (same as message_id)
 - `token` - FCM device token
+- `person_id` - Identifier of the user who received the notification
 - `delivered` - Boolean delivery status
 - `opened` - Boolean open status
 - `delivered_at` - Delivery timestamp
 - `opened_at` - Open timestamp
+- `send_context` - Context in which the notification was sent (e.g., 'transactional')
+- `send_context_id` - Identifier for the specific context
 - `created_at` - Record creation timestamp
 
 ## Error Handling

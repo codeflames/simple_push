@@ -3,23 +3,28 @@ import { randomUUID } from 'crypto';
 
 export const updateMetrics = async (req, res) => {
   try {
-    const { notificationId, token, event, timestamp } = req.body;
+    const { message_id, person_id, send_context, send_context_id, status, ts } = req.body;
 
-    if (!notificationId || !event) {
+    if (!message_id || !person_id || !status) {
       return res.status(400).json({
         success: false,
-        error: 'notificationId, and event are required'
+        error: 'message_id, person_id, and status are required'
       });
     }
 
-    if (!['delivered', 'opened'].includes(event)) {
+    if (!['delivered', 'opened'].includes(status)) {
       return res.status(400).json({
         success: false,
-        error: 'Event must be either "delivered" or "opened"'
+        error: 'Status must be either "delivered" or "opened"'
       });
     }
 
-    const eventTimestamp = timestamp || new Date().toISOString();
+    const eventTimestamp = ts || new Date().toISOString();
+
+    // Using message_id as notification_id for tracking metrics
+    const notificationId = message_id;
+    // Using person_id as token for identifying the recipient
+    const token = person_id;
 
     const existingMetric = await getMetricByNotificationAndToken(notificationId, token);
 
@@ -28,12 +33,16 @@ export const updateMetrics = async (req, res) => {
     if (existingMetric) {
       const updateData = {};
 
-      if (event === 'delivered') {
+      if (status === 'delivered') {
         updateData.delivered = true;
         updateData.delivered_at = eventTimestamp;
-      } else if (event === 'opened') {
+        updateData.send_context = send_context || existingMetric.send_context;
+        updateData.send_context_id = send_context_id || existingMetric.send_context_id;
+      } else if (status === 'opened') {
         updateData.opened = true;
         updateData.opened_at = eventTimestamp;
+        updateData.send_context = send_context || existingMetric.send_context;
+        updateData.send_context_id = send_context_id || existingMetric.send_context_id;
         if (!existingMetric.delivered) {
           updateData.delivered = true;
           updateData.delivered_at = eventTimestamp;
@@ -53,10 +62,13 @@ export const updateMetrics = async (req, res) => {
         id: randomUUID(),
         notification_id: notificationId,
         token,
-        delivered: event === 'delivered' || event === 'opened',
-        opened: event === 'opened',
-        delivered_at: event === 'delivered' || event === 'opened' ? eventTimestamp : null,
-        opened_at: event === 'opened' ? eventTimestamp : null
+        delivered: status === 'delivered' || status === 'opened',
+        opened: status === 'opened',
+        delivered_at: status === 'delivered' || status === 'opened' ? eventTimestamp : null,
+        opened_at: status === 'opened' ? eventTimestamp : null,
+        send_context: send_context || 'transactional',
+        send_context_id: send_context_id || '',
+        person_id: person_id
       };
 
       result = await saveMetric(insertData);
@@ -64,7 +76,7 @@ export const updateMetrics = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: `Metric ${event} recorded successfully`,
+      message: `Metric ${status} recorded successfully`,
       data: result
     });
 
