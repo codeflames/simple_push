@@ -62,7 +62,10 @@ Send push notifications to multiple devices.
   "title": "Notification Title",
   "body": "Notification message body",
   "data": {
-    "custom_key": "custom_value"
+    "custom_key": "custom_value",
+    "person_id": "user_987654321",
+    "send_context": "transactional",
+    "send_context_id": ""
   }
 }
 ```
@@ -71,7 +74,7 @@ Send push notifications to multiple devices.
 ```json
 {
   "success": true,
-  "notificationId": "uuid",
+  "message_id": "uuid",
   "summary": {
     "total": 2,
     "succeeded": 2,
@@ -122,7 +125,7 @@ Status: `delivered` or `opened`
 
 ### 3. Get Notification Metrics
 
-**GET** `/api/notifications/metrics/:notificationId`
+**GET** `/api/notifications/metrics/:message_id`
 
 Retrieve analytics for a specific notification.
 
@@ -201,7 +204,7 @@ fetch('http://your-server.com/api/notifications/metrics', {
 
 ### notification_metrics
 - `id` - UUID primary key
-- `notification_id` - Foreign key to push_notifications (same as message_id)
+- `notification_id` - Foreign key to push_notifications (this is the message_id)
 - `token` - FCM device token
 - `person_id` - Identifier of the user who received the notification
 - `delivered` - Boolean delivery status
@@ -245,3 +248,6 @@ cI9oZvx2ekDcjlRRVdRmyi:APA91bGxEtB7bP16fgmcRZxLoC4d6HdNxtwJXhmmAI9towqO72-p8Z2fU
       "custom_key": "custom_value"
     }
   }'
+
+
+

@@ -91,16 +91,16 @@ export const updateMetrics = async (req, res) => {
 
 export const getNotificationMetrics = async (req, res) => {
   try {
-    const { notificationId } = req.params;
+    const { message_id } = req.params;
 
-    if (!notificationId) {
+    if (!message_id) {
       return res.status(400).json({
         success: false,
-        error: 'notificationId is required'
+        error: 'message_id is required'
       });
     }
 
-    const notification = await getNotificationById(notificationId);
+    const notification = await getNotificationById(message_id);
 
     if (!notification) {
       return res.status(404).json({
@@ -109,7 +109,7 @@ export const getNotificationMetrics = async (req, res) => {
       });
     }
 
-    const metrics = await getMetricsByNotificationId(notificationId);
+    const metrics = await getMetricsByNotificationId(message_id);
 
     const totalSent = notification.tokens_count;
     const delivered = metrics.filter(m => m.delivered).length;

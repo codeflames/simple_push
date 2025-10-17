@@ -64,25 +64,25 @@ export async function saveMetric(metric) {
   return metric;
 }
 
-export async function getMetricsByNotificationId(notificationId) {
+export async function getMetricsByNotificationId(message_id) {
   const metrics = await readFile(METRICS_FILE);
-  return metrics.filter(m => m.notification_id === notificationId);
+  return metrics.filter(m => m.notification_id === message_id);
 }
 
-export async function getMetricByNotificationAndToken(notificationId, token) {
+export async function getMetricByNotificationAndToken(message_id, token) {
   const metrics = await readFile(METRICS_FILE);
-  return metrics.find(m => m.notification_id === notificationId && m.token === token);
+  return metrics.find(m => m.notification_id === message_id && m.token === token);
 }
 
-export async function updateMetric(notificationId, token, updates) {
+export async function updateMetric(message_id, token, updates) {
   const updated = await updateLineInFile(
     METRICS_FILE,
-    m => m.notification_id === notificationId && m.token === token,
+    m => m.notification_id === message_id && m.token === token,
     m => ({ ...m, ...updates })
   );
 
   if (updated) {
-    return await getMetricByNotificationAndToken(notificationId, token);
+    return await getMetricByNotificationAndToken(message_id, token);
   }
 
   return null;

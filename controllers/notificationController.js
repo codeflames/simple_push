@@ -23,7 +23,7 @@ export const sendPushNotifications = async (req, res) => {
 
     // Record the main notification entry
     const notificationRecord = {
-      id: randomUUID(),
+      id: randomUUID(),  // This will be our message_id
       title,
       body,
       data,
@@ -115,7 +115,7 @@ export const sendPushNotifications = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      notificationId: notificationRecord.id,
+      message_id: notificationRecord.id,
       summary: {
         total: tokens.length,
         succeeded: successCount,

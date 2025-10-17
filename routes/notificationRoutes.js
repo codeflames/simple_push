@@ -8,6 +8,6 @@ router.post('/send', sendPushNotifications);
 
 router.post('/metrics', updateMetrics);
 
-router.get('/metrics/:notificationId', getNotificationMetrics);
+router.get('/metrics/:message_id', getNotificationMetrics);
 
 export default router;

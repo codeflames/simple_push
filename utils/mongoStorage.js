@@ -20,23 +20,23 @@ export async function saveMetric(metric) {
   return metric;
 }
 
-export async function getMetricsByNotificationId(notificationId) {
+export async function getMetricsByNotificationId(message_id) {
   const db = getDB();
-  return await db.collection(METRICS_COLLECTION).find({ notification_id: notificationId }).toArray();
+  return await db.collection(METRICS_COLLECTION).find({ notification_id: message_id }).toArray();
 }
 
-export async function getMetricByNotificationAndToken(notificationId, token) {
+export async function getMetricByNotificationAndToken(message_id, token) {
   const db = getDB();
   return await db.collection(METRICS_COLLECTION).findOne({
-    notification_id: notificationId,
+    notification_id: message_id,
     token
   });
 }
 
-export async function updateMetric(notificationId, token, updates) {
+export async function updateMetric(message_id, token, updates) {
   const db = getDB();
   const result = await db.collection(METRICS_COLLECTION).findOneAndUpdate(
-    { notification_id: notificationId, token },
+    { notification_id: message_id, token },
     { $set: updates },
     { returnDocument: 'after' }
   );
