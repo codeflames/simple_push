@@ -44,18 +44,18 @@ export const sendPushNotifications = async (req, res) => {
       notification: { title, body },
       data: {
         ...data,
-        message_id: notificationRecord.id,  // Use message_id as required by metrics endpoint
+        cdp_message_id: notificationRecord.id,  // Use message_id as required by metrics endpoint
         notification_id: notificationRecord.id, // Keep for backward compatibility
         send_context,
         send_context_id,
       },
-      // apns: {
-      //   payload: {
-      //     aps: {
-      //       'mutable-content': 1, // Correct APNs key
-      //     },
-      //   },
-      // },
+      apns: {
+        payload: {
+          aps: {
+            'mutable-content': 1, // Correct APNs key
+          },
+        },
+      },
     };
 
     // Send to each token
