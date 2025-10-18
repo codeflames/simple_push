@@ -94,6 +94,7 @@ Send push notifications to multiple devices.
 ### 2. Update Metrics
 
 **POST** `/v1/message/delivery`
+**POST** `/v1/message/delivery/push` (alternative path)
 
 or legacy endpoint:
 
@@ -178,7 +179,7 @@ When your app receives a notification:
 
 ```javascript
 // When notification is delivered
-fetch('http://your-server.com/v1/message/delivery', {
+fetch('http://your-server.com/v1/message/delivery/push', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -192,7 +193,7 @@ fetch('http://your-server.com/v1/message/delivery', {
 });
 
 // When user opens/clicks notification
-fetch('http://your-server.com/v1/message/delivery', {
+fetch('http://your-server.com/v1/message/delivery/push', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -266,7 +267,7 @@ curl -X POST http://localhost:3000/v1/message/send \
   }'
 
 # IMPORTANT: Client must call this endpoint to report delivery status
-curl -X POST http://localhost:3000/v1/message/delivery \
+curl -X POST http://localhost:3000/v1/message/delivery/push \
   -H "Content-Type: application/json" \
   -d '{
     "message_id": "msg_1234567890",

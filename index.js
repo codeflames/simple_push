@@ -11,6 +11,14 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
+// Middleware to normalize paths with double slashes
+app.use((req, res, next) => {
+  if (req.url.includes('//')) {
+    req.url = req.url.replace(/\/+/g, '/');
+  }
+  next();
+});
+
 try {
   initializeFirebase();
 } catch (error) {
