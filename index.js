@@ -23,7 +23,11 @@ try {
   console.error('Warning: MongoDB not connected. Add MONGODB_URI to .env');
 }
 
+// Mount legacy routes at /api/notifications
 app.use('/api/notifications', notificationRoutes);
+
+// Mount versioned API routes at the root level for cleaner URLs
+app.use('/', notificationRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Push Notification Service is running' });

@@ -51,6 +51,10 @@ The server will run on `http://localhost:3000`
 
 ### 1. Send Push Notifications
 
+**POST** `/v1/message/send`
+
+or legacy endpoint:
+
 **POST** `/api/notifications/send`
 
 Send push notifications to multiple devices.
@@ -89,6 +93,10 @@ Send push notifications to multiple devices.
 
 ### 2. Update Metrics
 
+**POST** `/v1/message/delivery`
+
+or legacy endpoint:
+
 **POST** `/api/notifications/metrics`
 
 Report delivery or open events from client devices.
@@ -124,6 +132,10 @@ Status: `delivered` or `opened`
 ```
 
 ### 3. Get Notification Metrics
+
+**GET** `/v1/message/:message_id/analytics`
+
+or legacy endpoint:
 
 **GET** `/api/notifications/metrics/:message_id`
 
@@ -164,28 +176,28 @@ When your app receives a notification:
 
 ```javascript
 // When notification is delivered
-fetch('http://your-server.com/api/notifications/metrics', {
+fetch('http://your-server.com/v1/message/delivery', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    message_id: notification.data.message_id,
+    message_id: notification.data.delivery_message_id,
     person_id: notification.data.person_id || fcmToken,
-    send_context: notification.data.send_context || 'transactional',
-    send_context_id: notification.data.send_context_id || '',
+    send_context: notification.data.delivery_send_context || 'transactional',
+    send_context_id: notification.data.delivery_send_context_id || '',
     status: 'delivered',
     ts: new Date().toISOString()
   })
 });
 
 // When user opens/clicks notification
-fetch('http://your-server.com/api/notifications/metrics', {
+fetch('http://your-server.com/v1/message/delivery', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
-    message_id: notification.data.message_id,
+    message_id: notification.data.delivery_message_id,
     person_id: notification.data.person_id || fcmToken,
-    send_context: notification.data.send_context || 'transactional',
-    send_context_id: notification.data.send_context_id || '',
+    send_context: notification.data.delivery_send_context || 'transactional',
+    send_context_id: notification.data.delivery_send_context_id || '',
     status: 'opened',
     ts: new Date().toISOString()
   })
@@ -237,16 +249,30 @@ All error responses include:
 
 
 
-curl -X POST http://localhost:3000/api/notifications/send \
+curl -X POST http://localhost:3000/v1/message/send \
   -H "Content-Type: application/json" \
   -d '{
-    "tokens": ["
-cI9oZvx2ekDcjlRRVdRmyi:APA91bGxEtB7bP16fgmcRZxLoC4d6HdNxtwJXhmmAI9towqO72-p8Z2fUEssA0TxDic3h8bWc2NRaWYrw8uzWx-Flm4iXIpe8xUgmtplNnSY5OXhg9gnYfk"],
+    "tokens": ["cI9oZvx2ekDcjlRRVdRmyi:APA91bGxEtB7bP16fgmcRZxLoC4d6HdNxtwJXhmmAI9towqO72-p8Z2fUEssA0TxDic3h8bWc2NRaWYrw8uzWx-Flm4iXIpe8xUgmtplNnSY5OXhg9gnYfk"],
     "title": "Notification Title",
     "body": "Notification message body",
     "data": {
-      "custom_key": "custom_value"
+      "custom_key": "custom_value",
+      "person_id": "user_123456",
+      "send_context": "transactional",
+      "send_context_id": "order_7890"
     }
+  }'
+
+# Example of reporting delivery status
+curl -X POST http://localhost:3000/v1/message/delivery \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message_id": "msg_1234567890",
+    "person_id": "user_987654321",
+    "send_context": "transactional",
+    "send_context_id": "",
+    "status": "delivered",
+    "ts": "2025-10-15T09:45:30.123Z"
   }'
 
 
