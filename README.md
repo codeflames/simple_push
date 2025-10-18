@@ -172,6 +172,8 @@ Check if the service is running.
 
 ### Send Metrics from Mobile App
 
+**Important**: The system now requires client apps to report delivery status. Notifications are not automatically marked as delivered when sent.
+
 When your app receives a notification:
 
 ```javascript
@@ -263,7 +265,7 @@ curl -X POST http://localhost:3000/v1/message/send \
     }
   }'
 
-# Example of reporting delivery status
+# IMPORTANT: Client must call this endpoint to report delivery status
 curl -X POST http://localhost:3000/v1/message/delivery \
   -H "Content-Type: application/json" \
   -d '{

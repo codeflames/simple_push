@@ -69,8 +69,8 @@ export const sendPushNotifications = async (req, res) => {
           id: metricId,
           notification_id: notificationRecord.id,
           token,
-          delivered: true,
-          delivered_at: new Date().toISOString(),
+          delivered: false,  // Don't mark as delivered until client confirms
+          delivered_at: null,
           opened: false,
           opened_at: null,
           send_context,
@@ -78,8 +78,8 @@ export const sendPushNotifications = async (req, res) => {
           person_id: data.person_id || token, // Use person_id from data or fall back to token
         });
 
-        // Update metric after save (example: marking as confirmed)
-        await updateMetric(notificationRecord.id, token, { confirmed: true });
+        // Only mark as sent to FCM, not delivered to device
+        await updateMetric(notificationRecord.id, token, { sent: true, sent_at: new Date().toISOString() });
 
         return { token, success: true };
       } catch (error) {
