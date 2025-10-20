@@ -66,11 +66,11 @@ export const sendPushNotifications = async (req, res) => {
         payload: {
           aps: {
             alert: {
-              title: iosTitle || title, // Use iOS-specific title if provided
-              body: iosBody || body,    // Use iOS-specific body if provided
+              title:  title, // Use iOS-specific title if provided
+              body: body,    // Use iOS-specific body if provided
             },
             'mutable-content': 1, // This enables the notification service extension
-            sound: sound || "default"
+         
           }
         }
       },
@@ -78,7 +78,6 @@ export const sendPushNotifications = async (req, res) => {
       // Android-specific configuration
       android: {
         notification: {
-          channel_id: data.channel_id || androidChannelId,
           title: title,
           body: body
         }
