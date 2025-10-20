@@ -81,6 +81,20 @@ Send push notifications to multiple devices.
 }
 ```
 
+#### Platform-Specific Options
+
+The API supports customizing notifications for specific platforms:
+
+| Parameter | Platform | Description |
+|-----------|----------|-------------|
+| `iosTitle` | iOS | Override title for iOS devices only |
+| `iosBody` | iOS | Override body text for iOS devices only |
+| `sound` | iOS | Notification sound (e.g., "default" or custom sound) |
+| `androidChannelId` | Android | Notification channel ID for Android devices (required for Android 8.0+) |
+| `data.channel_id` | Android | Alternative way to specify Android channel ID |
+
+These options allow you to customize how your notification appears on different platforms while keeping a single API call.
+
 **Response:**
 ```json
 {
@@ -289,6 +303,40 @@ curl -X POST http://localhost:3000/v1/message/delivery/push \
     "send_context_id": "",
     "status": "delivered",
     "ts": "2025-10-15T09:45:30.123Z"
+  }'
+
+# Example: iOS-specific notification with custom sound
+curl -X POST http://localhost:3000/v1/message/send \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tokens": ["YOUR_FCM_TOKEN"],
+    "title": "Generic Title",
+    "body": "Generic Body",
+    "iosTitle": "Special iOS Title",
+    "iosBody": "Special iOS Body with emoji 🎉",
+    "sound": "custom_sound.aiff",
+    "data": {
+      "person_id": "user_123456",
+      "send_context": "transactional",
+      "screen": "/settings"
+    }
+  }'
+
+# Example: Android-specific notification with channel ID
+curl -X POST http://localhost:3000/v1/message/send \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tokens": ["YOUR_FCM_TOKEN"],
+    "title": "Important Update",
+    "body": "Your order has been processed",
+    "androidChannelId": "orders_channel",
+    "data": {
+      "person_id": "user_123456",
+      "send_context": "transactional",
+      "send_context_id": "order_8765",
+      "screen": "/orders",
+      "order_id": "8765"
+    }
   }'
 
 
