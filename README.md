@@ -9,6 +9,7 @@ A Node.js backend system for sending Firebase push notifications and tracking de
 - Store metrics in Supabase database
 - RESTful API endpoints
 - Comprehensive error handling
+- Platform-specific notification customization for iOS and Android
 
 ## Setup
 
@@ -62,14 +63,20 @@ Send push notifications to multiple devices.
 **Request Body:**
 ```json
 {
-  "tokens": ["fcm_token_1", "fcm_token_2"],
+  "tokens": ["ecXhqt7LoUcciIeBVKIZXK:APA91bGeGfY_pdXlJ5OwydyGcsF3oK_FTdXVqVDKV_EGy6nCJefRMRcSuD1ZCZb923hWIa0dhRo-R-vVrgRbKDU2GyO17-2cYnBKoiLz4D86X-EbWA4tfNk"],
   "title": "Notification Title",
   "body": "Notification message body",
+  "iosTitle": "iOS Specific Title (Optional)",
+  "iosBody": "iOS Specific Body (Optional)",
+  "sound": "default",
+  "androidChannelId": "your_notification_channel_id",
   "data": {
     "custom_key": "custom_value",
     "person_id": "user_987654321",
     "send_context": "transactional",
-    "send_context_id": ""
+    "send_context_id": "",
+    "screen": "/home",
+    "item_id": "12345"
   }
 }
 ```
@@ -258,11 +265,17 @@ curl -X POST http://localhost:3000/v1/message/send \
     "tokens": ["cI9oZvx2ekDcjlRRVdRmyi:APA91bGxEtB7bP16fgmcRZxLoC4d6HdNxtwJXhmmAI9towqO72-p8Z2fUEssA0TxDic3h8bWc2NRaWYrw8uzWx-Flm4iXIpe8xUgmtplNnSY5OXhg9gnYfk"],
     "title": "Notification Title",
     "body": "Notification message body",
+    "iosTitle": "iOS Specific Title",
+    "iosBody": "iOS Specific Body Text",
+    "sound": "default",
+    "androidChannelId": "default_channel",
     "data": {
       "custom_key": "custom_value",
       "person_id": "user_123456",
       "send_context": "transactional",
-      "send_context_id": "order_7890"
+      "send_context_id": "order_7890",
+      "screen": "/home",
+      "item_id": "12345"
     }
   }'
 

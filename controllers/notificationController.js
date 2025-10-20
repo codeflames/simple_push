@@ -4,7 +4,12 @@ import { randomUUID } from 'crypto';
 
 export const sendPushNotifications = async (req, res) => {
   try {
-    const { tokens, title, body, data = {} } = req.body;
+    const { 
+      tokens, 
+      title, 
+      body, 
+      data = {},
+    } = req.body;
 
     // Validate request body
     if (!tokens || !Array.isArray(tokens) || tokens.length === 0) {
@@ -39,23 +44,39 @@ export const sendPushNotifications = async (req, res) => {
     const send_context = data.send_context || 'transactional';
     const send_context_id = data.send_context_id || '';
     
-    // Construct base FCM message
+    // Construct base FCM message with proper structure for both iOS and Android
     const message = {
-      notification: { title, body },
+      // Generic notification content - primarily for Android
+      notification: { 
+        title, 
+        body 
+      },
+      
+      // Data payload with tracking fields and other custom data
       data: {
         ...data,
-        // Only add delivery_ prefix to fields in the notification sent to devices
+        // Add delivery_ prefix to fields in the notification sent to devices
         delivery_message_id: notificationRecord.id,
         delivery_send_context: send_context,
         delivery_send_context_id: send_context_id,
       },
+      
+      // iOS-specific configuration
       apns: {
         payload: {
           aps: {
-            'mutable-content': 1, // Correct APNs key
-          },
-        },
+            alert: {
+              title:  title, // Use iOS-specific title if provided
+              body: body,    // Use iOS-specific body if provided
+            },
+            'mutable-content': 1, // This enables the notification service extension
+          
+          }
+        }
       },
+      
+      // Android-specific configuration
+     
     };
 
     // Send to each token
